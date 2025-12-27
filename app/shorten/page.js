@@ -16,7 +16,7 @@ export default function Shorten() {
       return;
     }
 
-    // ✅ AUTO-FIX URL (important)
+    // ✅ AUTO-FIX URL
     let finalUrl = url.trim();
     if (
       !finalUrl.startsWith("http://") &&
@@ -47,7 +47,9 @@ export default function Shorten() {
       const result = await res.json();
 
       // ✅ SAVE FOR UI
-      setGenerated(`${process.env.NEXT_PUBLIC_HOST}/${shorturl.trim()}`);
+      setGenerated(
+        `${process.env.NEXT_PUBLIC_HOST}/${shorturl.trim()}`
+      );
       setDisplayShort(shorturl.trim());
 
       // clear inputs
