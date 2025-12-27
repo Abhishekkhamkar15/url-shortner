@@ -51,7 +51,7 @@ export default function Shorten() {
 
       // ✅ SAVE FOR UI (USE LOWERCASE)
       setGenerated(
-        `${process.env.NEXT_PUBLIC_HOST}/${cleanShort}`
+        `${process.env.NEXT_PUBLIC_HOST}/r/${cleanShort}`
       );
       setDisplayShort(cleanShort);
 
