@@ -11,14 +11,19 @@ export default async function Page({ params }) {
 
     const doc = await collection.findOne({ shorturl });
 
-    if (doc?.url) {
-      redirect(doc.url); // redirect to original URL
-    } else {
-      redirect(process.env.NEXT_PUBLIC_HOST || "/"); // fallback
+    if (!doc?.url) {
+      redirect("/");
     }
 
+    // ✅ ENSURE VALID URL
+    let targetUrl = doc.url;
+    if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
+      targetUrl = "https://" + targetUrl;
+    }
+
+    redirect(targetUrl);
   } catch (error) {
     console.error("Redirect error:", error);
-    redirect(process.env.NEXT_PUBLIC_HOST || "/");
+    redirect("/");
   }
 }
