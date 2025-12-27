@@ -7,7 +7,7 @@ export default function Shorten() {
   const [url, setUrl] = useState("");
   const [shorturl, setShorturl] = useState("");
   const [generated, setGenerated] = useState("");
-  const [displayShort, setDisplayShort] = useState(""); // ✅ NEW
+  const [displayShort, setDisplayShort] = useState("");
   const [loading, setLoading] = useState(false);
 
   const generate = async () => {
@@ -16,13 +16,25 @@ export default function Shorten() {
       return;
     }
 
+    // ✅ AUTO-FIX URL (important)
+    let finalUrl = url.trim();
+    if (
+      !finalUrl.startsWith("http://") &&
+      !finalUrl.startsWith("https://")
+    ) {
+      finalUrl = "https://" + finalUrl;
+    }
+
     try {
       setLoading(true);
 
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, shorturl }),
+        body: JSON.stringify({
+          url: finalUrl,
+          shorturl: shorturl.trim(),
+        }),
       });
 
       if (!res.ok) {
@@ -34,9 +46,9 @@ export default function Shorten() {
 
       const result = await res.json();
 
-      // ✅ SAVE BOTH
-      setGenerated(`${process.env.NEXT_PUBLIC_HOST}/${shorturl}`);
-      setDisplayShort(shorturl);
+      // ✅ SAVE FOR UI
+      setGenerated(`${process.env.NEXT_PUBLIC_HOST}/${shorturl.trim()}`);
+      setDisplayShort(shorturl.trim());
 
       // clear inputs
       setUrl("");
@@ -59,7 +71,7 @@ export default function Shorten() {
         <input
           type="text"
           value={url}
-          placeholder="Enter your URL"
+          placeholder="Enter your URL (google.com is ok)"
           onChange={(e) => setUrl(e.target.value)}
           className="px-4 py-2 bg-white rounded-md focus:outline-amber-600"
         />
@@ -85,7 +97,7 @@ export default function Shorten() {
         </button>
       </div>
 
-      {/* ✅ NOW IT WILL SHOW */}
+      {/* ✅ SHOW ONLY SHORT TEXT */}
       {generated && (
         <div className="mt-4">
           <span className="font-bold text-lg">Your Short Link</span>
