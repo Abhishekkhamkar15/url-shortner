@@ -25,6 +25,9 @@ export default function Shorten() {
       finalUrl = "https://" + finalUrl;
     }
 
+    // ✅ NORMALIZE SHORT URL (CRITICAL)
+    const cleanShort = shorturl.trim().toLowerCase();
+
     try {
       setLoading(true);
 
@@ -33,7 +36,7 @@ export default function Shorten() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           url: finalUrl,
-          shorturl: shorturl.trim(),
+          shorturl: cleanShort,
         }),
       });
 
@@ -46,11 +49,11 @@ export default function Shorten() {
 
       const result = await res.json();
 
-      // ✅ SAVE FOR UI
+      // ✅ SAVE FOR UI (USE LOWERCASE)
       setGenerated(
-        `${process.env.NEXT_PUBLIC_HOST}/${shorturl.trim()}`
+        `${process.env.NEXT_PUBLIC_HOST}/${cleanShort}`
       );
-      setDisplayShort(shorturl.trim());
+      setDisplayShort(cleanShort);
 
       // clear inputs
       setUrl("");
