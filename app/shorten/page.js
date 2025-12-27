@@ -7,6 +7,7 @@ export default function Shorten() {
   const [url, setUrl] = useState("");
   const [shorturl, setShorturl] = useState("");
   const [generated, setGenerated] = useState("");
+  const [displayShort, setDisplayShort] = useState(""); // ✅ NEW
   const [loading, setLoading] = useState(false);
 
   const generate = async () => {
@@ -33,9 +34,11 @@ export default function Shorten() {
 
       const result = await res.json();
 
-      // full URL is stored internally
+      // ✅ SAVE BOTH
       setGenerated(`${process.env.NEXT_PUBLIC_HOST}/${shorturl}`);
+      setDisplayShort(shorturl);
 
+      // clear inputs
       setUrl("");
       setShorturl("");
 
@@ -82,7 +85,7 @@ export default function Shorten() {
         </button>
       </div>
 
-      {/* ✅ SHOW ONLY SHORT TEXT */}
+      {/* ✅ NOW IT WILL SHOW */}
       {generated && (
         <div className="mt-4">
           <span className="font-bold text-lg">Your Short Link</span>
@@ -92,7 +95,7 @@ export default function Shorten() {
               target="_blank"
               className="text-blue-600 underline"
             >
-              {shorturl}
+              {displayShort}
             </Link>
           </code>
         </div>
