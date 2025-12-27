@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import clientPromise from "@/lib/mongodb";
 
-export default async function Page({ params }) {
+export async function GET(request, { params }) {
   const { shorturl } = params;
 
   try {
@@ -11,19 +10,31 @@ export default async function Page({ params }) {
 
     const doc = await collection.findOne({ shorturl });
 
-    if (!doc?.url) {
-      redirect("/");
+    if (!doc || !doc.url) {
+      return new Response(null, {
+        status: 302,
+        headers: { Location: "/" },
+      });
     }
 
-    // ✅ ENSURE VALID URL
-    let targetUrl = doc.url;
-    if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
-      targetUrl = "https://" + targetUrl;
+    // ✅ FORCE ABSOLUTE URL
+    let target = doc.url.trim();
+    if (!target.startsWith("http://") && !target.startsWith("https://")) {
+      target = "https://" + target;
     }
 
-    redirect(targetUrl);
-  } catch (error) {
-    console.error("Redirect error:", error);
-    redirect("/");
+    // ✅ RAW HTTP REDIRECT (BROWSER LEVEL)
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: target,
+      },
+    });
+  } catch (err) {
+    console.error("Redirect failed:", err);
+    return new Response(null, {
+      status: 302,
+      headers: { Location: "/" },
+    });
   }
 }
