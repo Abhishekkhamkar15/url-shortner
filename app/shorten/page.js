@@ -20,13 +20,10 @@ export default function Shorten() {
 
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, shorturl }),
       });
 
-      // 🚨 IMPORTANT: handle non-JSON responses
       if (!res.ok) {
         const text = await res.text();
         console.error("Server error:", text);
@@ -36,7 +33,9 @@ export default function Shorten() {
 
       const result = await res.json();
 
+      // full URL is stored internally
       setGenerated(`${process.env.NEXT_PUBLIC_HOST}/${shorturl}`);
+
       setUrl("");
       setShorturl("");
 
@@ -83,16 +82,17 @@ export default function Shorten() {
         </button>
       </div>
 
+      {/* ✅ SHOW ONLY SHORT TEXT */}
       {generated && (
         <div className="mt-4">
-          <span className="font-bold text-lg">Your Link</span>
-          <code className="block mt-2 p-2 bg-white rounded-md break-all">
+          <span className="font-bold text-lg">Your Short Link</span>
+          <code className="block mt-2 p-2 bg-white rounded-md">
             <Link
               href={generated}
               target="_blank"
               className="text-blue-600 underline"
             >
-              {generated}
+              {shorturl}
             </Link>
           </code>
         </div>
