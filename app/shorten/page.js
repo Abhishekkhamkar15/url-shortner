@@ -1,13 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
 export default function Shorten() {
   const [url, setUrl] = useState("");
   const [shorturl, setShorturl] = useState("");
   const [generated, setGenerated] = useState("");
-  const [displayShort, setDisplayShort] = useState("");
   const [loading, setLoading] = useState(false);
 
   const generate = async () => {
@@ -16,16 +14,13 @@ export default function Shorten() {
       return;
     }
 
-    // ✅ AUTO-FIX URL
+    // ✅ Auto-fix URL
     let finalUrl = url.trim();
-    if (
-      !finalUrl.startsWith("http://") &&
-      !finalUrl.startsWith("https://")
-    ) {
+    if (!finalUrl.startsWith("http://") && !finalUrl.startsWith("https://")) {
       finalUrl = "https://" + finalUrl;
     }
 
-    // ✅ NORMALIZE SHORT URL (CRITICAL)
+    // ✅ Normalize short code
     const cleanShort = shorturl.trim().toLowerCase();
 
     try {
@@ -43,26 +38,24 @@ export default function Shorten() {
       if (!res.ok) {
         const text = await res.text();
         console.error("Server error:", text);
-        alert("Failed to generate URL. Try again.");
+        alert("Failed to generate URL");
         return;
       }
 
       const result = await res.json();
 
-      // ✅ SAVE FOR UI (USE LOWERCASE)
+      // ✅ IMPORTANT: generate /r/ link
       setGenerated(
         `${process.env.NEXT_PUBLIC_HOST}/r/${cleanShort}`
       );
-      setDisplayShort(cleanShort);
 
-      // clear inputs
       setUrl("");
       setShorturl("");
 
       alert(result.message);
     } catch (err) {
-      console.error("Fetch error:", err);
-      alert("Network error. Please try again.");
+      console.error("Network error:", err);
+      alert("Network error");
     } finally {
       setLoading(false);
     }
@@ -102,18 +95,21 @@ export default function Shorten() {
         </button>
       </div>
 
-      {/* ✅ SHOW ONLY SHORT TEXT */}
+      {/* ✅ SHOW GENERATED LINK */}
       {generated && (
         <div className="mt-4">
           <span className="font-bold text-lg">Your Short Link</span>
-          <code className="block mt-2 p-2 bg-white rounded-md">
-            <Link
+
+          <code className="block mt-2 p-2 bg-white rounded-md break-all">
+            {/* ✅ Use <a>, NOT <Link> */}
+            <a
               href={generated}
               target="_blank"
+              rel="noopener noreferrer"
               className="text-blue-600 underline"
             >
-              {displayShort}
-            </Link>
+              {generated}
+            </a>
           </code>
         </div>
       )}
