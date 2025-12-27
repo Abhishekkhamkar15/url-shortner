@@ -1,7 +1,8 @@
 import clientPromise from "@/lib/mongodb";
 
 export async function GET(request, { params }) {
-  const { shorturl } = params;
+  // ✅ NORMALIZE SHORT URL
+  const shorturl = params.shorturl.trim().toLowerCase();
 
   try {
     const client = await clientPromise;
@@ -23,12 +24,10 @@ export async function GET(request, { params }) {
       target = "https://" + target;
     }
 
-    // ✅ RAW HTTP REDIRECT (BROWSER LEVEL)
+    // ✅ RAW HTTP REDIRECT
     return new Response(null, {
       status: 302,
-      headers: {
-        Location: target,
-      },
+      headers: { Location: target },
     });
   } catch (err) {
     console.error("Redirect failed:", err);
